@@ -64,11 +64,11 @@ int main(int argc, char **argv) {
 
     for (x = 0; x < pattern_width; x = x + 1) {
       if (x % 2) {
-        pattern[0*pattern_width+x] = 0;
+        pattern[0*pattern_width+x] = 2;
         pattern[1*pattern_width+x] = 1;
       } else {
         pattern[0*pattern_width+x] = 1;
-        pattern[1*pattern_width+x] = 0;
+        pattern[1*pattern_width+x] = 2;
       }
       for (y = 2; y < pattern_height; y = y + 1) {
         pattern[y*pattern_width+x] = 0;
@@ -88,26 +88,44 @@ int main(int argc, char **argv) {
 
       for (y = 0; y < pattern_height; y = y + 1) {
         for (x = 0; x < pattern_width; x = x + 1) {
-          if (pattern[y*pattern_width+x]) {
-            cairo_move_to(cr, x+xo-0.5, y+yo-0.5);
-            cairo_line_to(cr, x+xo-0.5, y+yo+0.5);
-            cairo_line_to(cr, x+xo+0.5, y+yo+0.5);
-            cairo_line_to(cr, x+xo+0.5, y+yo-0.5);
-            cairo_close_path(cr);
+          switch (pattern[y*pattern_width+x]) {
+            case 1:
+              cairo_move_to(cr, x+xo-1/2.0, y+yo-1/2.0);
+              cairo_line_to(cr, x+xo-1/2.0, y+yo+1/2.0);
+              cairo_line_to(cr, x+xo+1/2.0, y+yo+1/2.0);
+              cairo_line_to(cr, x+xo+1/2.0, y+yo-1/2.0);
+              cairo_close_path(cr);
+              break;
+            case 2:
+              cairo_move_to(cr, x+xo-1/2.0, y+yo+3/8.0);
+              cairo_line_to(cr, x+xo-1/2.0, y+yo+1/2.0);
+              cairo_line_to(cr, x+xo+1/2.0, y+yo+1/2.0);
+              cairo_line_to(cr, x+xo+1/2.0, y+yo+3/8.0);
+              cairo_close_path(cr);
+              break;
           }
           xo = xo + pattern_width;
-          if (pattern[y*pattern_width+x]) {
-            cairo_move_to(cr, x+xo-0.5, y+yo-0.5);
-            cairo_line_to(cr, x+xo-0.5, y+yo+0.5);
-            cairo_line_to(cr, x+xo+0.5, y+yo+0.5);
-            cairo_line_to(cr, x+xo+0.5, y+yo-0.5);
-            cairo_close_path(cr);
+          switch (pattern[y*pattern_width+x]) {
+            case 1:
+              cairo_move_to(cr, x+xo-1/2.0, y+yo-1/2.0);
+              cairo_line_to(cr, x+xo-1/2.0, y+yo+1/2.0);
+              cairo_line_to(cr, x+xo+1/2.0, y+yo+1/2.0);
+              cairo_line_to(cr, x+xo+1/2.0, y+yo-1/2.0);
+              cairo_close_path(cr);
+              break;
+            case 2:
+              cairo_move_to(cr, x+xo-1/2.0, y+yo+3/8.0);
+              cairo_line_to(cr, x+xo-1/2.0, y+yo+1/2.0);
+              cairo_line_to(cr, x+xo+1/2.0, y+yo+1/2.0);
+              cairo_line_to(cr, x+xo+1/2.0, y+yo+3/8.0);
+              cairo_close_path(cr);
+              break;
           }
           xo = xo - pattern_width;
+          cairo_set_source_rgb(cr, 1/1.0, 1/1.0, 1/1.0);
+          cairo_fill(cr);
         }
       }
-      cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
-      cairo_fill(cr);
     }
 
     { /* Update Display */
@@ -144,11 +162,11 @@ int main(int argc, char **argv) {
       if ( (int)scroll % pattern_width != (int)old_scroll % pattern_width ) {
         x = -(int)scroll % pattern_width;
         if (x % 2) {
-          pattern[0*pattern_width+x] = 0;
+          pattern[0*pattern_width+x] = 2;
           pattern[1*pattern_width+x] = 1;
         } else {
           pattern[0*pattern_width+x] = 1;
-          pattern[1*pattern_width+x] = 0;
+          pattern[1*pattern_width+x] = 2;
         }
         for (y = 2; y < pattern_height; y = y + 1) {
           pattern[y*pattern_width+x] = 0;
