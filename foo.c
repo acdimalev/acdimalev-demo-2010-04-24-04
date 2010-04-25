@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
   { /* Game Logic */
     running = 1;
     scroll = 0;
-    scroll_velocity = -1;
+    scroll_velocity = -4;
   }
 
   SDL_LockSurface(sdl_surface);
@@ -79,6 +79,15 @@ int main(int argc, char **argv) {
             cairo_line_to(cr, x+xo+0.5, y+yo-0.5);
             cairo_close_path(cr);
           }
+          xo = xo + pattern_width;
+          if (pattern[y*scale+x]) {
+            cairo_move_to(cr, x+xo-0.5, y+yo-0.5);
+            cairo_line_to(cr, x+xo-0.5, y+yo+0.5);
+            cairo_line_to(cr, x+xo+0.5, y+yo+0.5);
+            cairo_line_to(cr, x+xo+0.5, y+yo-0.5);
+            cairo_close_path(cr);
+          }
+          xo = xo - pattern_width;
         }
       }
       cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
@@ -110,6 +119,9 @@ int main(int argc, char **argv) {
       }
 
       scroll = scroll + scroll_velocity / fps;
+      if (scroll < -pattern_width) {
+        scroll = scroll + pattern_width;
+      }
     }
 
   }
