@@ -21,6 +21,7 @@ int main(int argc, char **argv) {
 
   int running;
   int pattern[pattern_width * pattern_height];
+  float scroll, scroll_velocity;
 
   /* Initialize SDL */
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
@@ -55,13 +56,15 @@ int main(int argc, char **argv) {
 
   { /* Game Logic */
     running = 1;
+    scroll = 0;
+    scroll_velocity = -1;
   }
 
   SDL_LockSurface(sdl_surface);
   while (running) {
     { /* Render Frame */
       int x, y;
-      float xo = -pattern_width/2.0+0.5, yo = -pattern_height/2.0+0.5;
+      float xo = -pattern_width/2.0+0.5+scroll, yo = -pattern_height/2.0+0.5;
 
       cairo_set_operator(cr, CAIRO_OPERATOR_CLEAR);
       cairo_paint(cr);
@@ -105,6 +108,8 @@ int main(int argc, char **argv) {
       if (keystate[SDLK_q]) {
         running = 0;
       }
+
+      scroll = scroll + scroll_velocity / fps;
     }
 
   }
