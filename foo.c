@@ -8,8 +8,9 @@ const int height = 240;
 const float aspect = 1.33333333333333333333;
 
 const int scale = 16;
-// st int pattern_width  = ceil(scale * aspect);
-const int pattern_width  = 22;
+// st int pattern_width  = ceil(scale * aspect) + 1;
+// st int pattern_width  = 23;
+const int pattern_width  = 32;
 // st int pattern_height = scale;
 const int pattern_height = 16;
 
@@ -55,9 +56,24 @@ int main(int argc, char **argv) {
   next_frame = 1024.0 / fps;
 
   { /* Game Logic */
+    int x, y;
+
     running = 1;
     scroll = 0;
     scroll_velocity = -4;
+
+    for (x = 0; x < pattern_width; x = x + 1) {
+      if (x % 2) {
+        pattern[0*pattern_width+x] = 0;
+        pattern[1*pattern_width+x] = 1;
+      } else {
+        pattern[0*pattern_width+x] = 1;
+        pattern[1*pattern_width+x] = 0;
+      }
+      for (y = 2; y < pattern_height; y = y + 1) {
+        pattern[y*pattern_width+x] = 0;
+      }
+    }
   }
 
   SDL_LockSurface(sdl_surface);
@@ -72,7 +88,7 @@ int main(int argc, char **argv) {
 
       for (y = 0; y < pattern_height; y = y + 1) {
         for (x = 0; x < pattern_width; x = x + 1) {
-          if (pattern[y*scale+x]) {
+          if (pattern[y*pattern_width+x]) {
             cairo_move_to(cr, x+xo-0.5, y+yo-0.5);
             cairo_line_to(cr, x+xo-0.5, y+yo+0.5);
             cairo_line_to(cr, x+xo+0.5, y+yo+0.5);
@@ -80,7 +96,7 @@ int main(int argc, char **argv) {
             cairo_close_path(cr);
           }
           xo = xo + pattern_width;
-          if (pattern[y*scale+x]) {
+          if (pattern[y*pattern_width+x]) {
             cairo_move_to(cr, x+xo-0.5, y+yo-0.5);
             cairo_line_to(cr, x+xo-0.5, y+yo+0.5);
             cairo_line_to(cr, x+xo+0.5, y+yo+0.5);
@@ -111,6 +127,8 @@ int main(int argc, char **argv) {
 
     { /* Game Logic */
       Uint8 *keystate;
+      float old_scroll;
+      int x, y;
 
       SDL_PumpEvents();
       keystate = SDL_GetKeyState(NULL);
@@ -118,9 +136,23 @@ int main(int argc, char **argv) {
         running = 0;
       }
 
+      old_scroll = scroll;
       scroll = scroll + scroll_velocity / fps;
       if (scroll < -pattern_width) {
         scroll = scroll + pattern_width;
+      }
+      if ( (int)scroll % pattern_width != (int)old_scroll % pattern_width ) {
+        x = -(int)scroll % pattern_width;
+        if (x % 2) {
+          pattern[0*pattern_width+x] = 0;
+          pattern[1*pattern_width+x] = 1;
+        } else {
+          pattern[0*pattern_width+x] = 1;
+          pattern[1*pattern_width+x] = 0;
+        }
+        for (y = 2; y < pattern_height; y = y + 1) {
+          pattern[y*pattern_width+x] = 0;
+        }
       }
     }
 
