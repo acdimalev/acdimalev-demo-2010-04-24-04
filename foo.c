@@ -1,11 +1,17 @@
 #include "SDL.h"
 #include <cairo.h>
 
-int fps = 30;
-int width  = 320;
-int height = 240;
+const int fps = 30;
+const int width  = 320;
+const int height = 240;
+// st float aspect = (float)width / height;
+const float aspect = 1.33333333333333333333;
 
-int scale = 16;
+const int scale = 16;
+// st int pattern_width  = ceil(scale * aspect);
+const int pattern_width  = 22;
+// st int pattern_height = scale;
+const int pattern_height = 16;
 
 int main(int argc, char **argv) {
   SDL_Surface *sdl_surface;
@@ -14,6 +20,7 @@ int main(int argc, char **argv) {
   Uint32 next_frame;
 
   int running;
+  int pattern[pattern_width * pattern_height];
 
   /* Initialize SDL */
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
@@ -54,19 +61,21 @@ int main(int argc, char **argv) {
   while (running) {
     { /* Render Frame */
       int x, y;
-      float xo = -scale/2.0+0.5, yo = -scale/2.0+0.5;
+      float xo = -pattern_width/2.0+0.5, yo = -pattern_height/2.0+0.5;
 
       cairo_set_operator(cr, CAIRO_OPERATOR_CLEAR);
       cairo_paint(cr);
       cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
 
-      for (y = 0; y < scale; y = y + 1) {
-        for (x = 0; x < scale; x = x + 1) {
-          cairo_move_to(cr, x+xo-0.5, y+xo-0.5);
-          cairo_line_to(cr, x+xo-0.5, y+xo+0.5);
-          cairo_line_to(cr, x+xo+0.5, y+xo+0.5);
-          cairo_line_to(cr, x+xo+0.5, y+xo-0.5);
-          cairo_close_path(cr);
+      for (y = 0; y < pattern_height; y = y + 1) {
+        for (x = 0; x < pattern_width; x = x + 1) {
+          if (pattern[y*scale+x]) {
+            cairo_move_to(cr, x+xo-0.5, y+yo-0.5);
+            cairo_line_to(cr, x+xo-0.5, y+yo+0.5);
+            cairo_line_to(cr, x+xo+0.5, y+yo+0.5);
+            cairo_line_to(cr, x+xo+0.5, y+yo-0.5);
+            cairo_close_path(cr);
+          }
         }
       }
       cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
